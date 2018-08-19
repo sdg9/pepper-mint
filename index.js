@@ -3,7 +3,8 @@
 var EventEmitter = require('events').EventEmitter,
     util = require('util'),
     request = require('request'),
-    Q = require('q'),
+    Q = require('q'), 
+    csv = require('csv-parse'),
 
     _until = require('./webdriver-util'),
 
@@ -473,6 +474,15 @@ PepperMint.prototype.getTags = function() {
     return this._getJsonData('tags');
 };
 
+/**
+ * Returns a promise that downloads all transactions. Parses
+ *  the returned CSV into a nice JSON object.
+ */
+PepperMint.prototype.downloadTransactions = function() {
+  return this._get('transactionDownload.event').then(function (body) {
+    return Q.nfcall(csv, body, {columns: true})
+  });    
+};
 
 
 /**
